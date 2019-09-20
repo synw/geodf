@@ -1,0 +1,24 @@
+With random data
+================
+
+Create a dataframe filled with random data
+
+``GeoDataFrame.random``
+
+Named parameters:
+
+:distance: *double*: the distance between points **default** ``10.0``
+:speed: *double* speed of each point. If not provided it will be randomized
+:timeInterval: *Duration* time between each point **default**
+               ``Duration(seconds: 10)``
+:bearing: *double* bearing of each point **default** ``142.0``
+:startLatitude: *double* latitude of the first geopoint **default** ``51.0``
+:startLongitude: *double* longitude of the first geopoint **default** ``0.0``
+:numRecords: *int* number of records **default** ``100``
+:verbose: *bool*: verbosity **default** ``false``
+
+.. highlight:: dart
+
+::
+
+   final df = GeoDataFrame.random();

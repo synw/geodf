@@ -1,0 +1,10 @@
+Sort
+====
+
+Sort the dataframe from a column name
+
+::
+
+   final df = df.sort("timestamp");
+   // or
+   df.sortI("timestamp");

@@ -1,0 +1,14 @@
+Inplace operations
+==================
+
+All the methods return something. All the inplace methods finish by ``I``: ex:
+
+.. highlight:: dart
+
+::
+
+   // a new object is returned
+   GeoDataFrame newDf = df.sort("altitude");
+
+  // the existing dataframe is sorted inplace
+  df.sortI("altitude");

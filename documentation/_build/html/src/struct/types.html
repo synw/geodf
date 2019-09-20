@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Types &mdash; Geodf  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Create" href="../create.html" />
+    <link rel="prev" title="Timeline" href="timeline.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Geodf
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Data structure</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="columns.html">Columns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_cols.html">Feature columns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timeline.html">Timeline</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Types</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Dataframe</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../create.html">Create</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/select.html">Select</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/sort.html">Sort</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/count.html">Count</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/info.html">Info about the data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Repl</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../repl/repl.html">Repl</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Conventions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conventions/inplace.html">Inplace operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../conventions/data.html">Data naming</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Geodf</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>Types</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/struct/types.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="types">
+<h1>Types<a class="headerlink" href="#types" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="geodataframecolumntype">
+<h2><code class="docutils literal notranslate"><span class="pre">GeoDataFrameColumnType</span></code><a class="headerlink" href="#geodataframecolumntype" title="Permalink to this headline">¶</a></h2>
+<p>Represents the internal type of a column:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>categorical</dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">String</span></code> for data representing categorical information</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>numeric</dt><dd><p>Either a <code class="docutils literal notranslate"><span class="pre">double</span></code> of an <code class="docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>time</dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">DateTime</span></code> object</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>geometry</dt><dd><p><a class="reference external" href="https://pub.dev/documentation/geopoint/latest/geopoint/GeoPoint-class.html">GeoPoint</a>
+or <a class="reference external" href="https://pub.dev/documentation/geopoint/latest/geopoint/GeoSerie-class.html">GeoSerie</a></p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="timelinesequencetype">
+<h2><code class="docutils literal notranslate"><span class="pre">TimelineSequenceType</span></code><a class="headerlink" href="#timelinesequencetype" title="Permalink to this headline">¶</a></h2>
+<p>Represents the type of a timeline sequence</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>moving</dt><dd><p>The sequence is a moving sequence with a speed value</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>stopped</dt><dd><p>Geographicaly static sequence</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>unknown</dt><dd><p>Not set</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="timestamptype">
+<h2><code class="docutils literal notranslate"><span class="pre">TimestampType</span></code><a class="headerlink" href="#timestamptype" title="Permalink to this headline">¶</a></h2>
+<p>The time unit of a timestamp</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>seconds</dt><dd><p>Seconds since epoch</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>milliseconds</dt><dd><p>Milliseconds since epoch</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>microseconds</dt><dd><p>Microseconds since epoch</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../create.html" class="btn btn-neutral float-right" title="Create" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="timeline.html" class="btn btn-neutral float-left" title="Timeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, synw
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

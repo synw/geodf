@@ -1,0 +1,28 @@
+Create a dataframe
+==================
+
+From a list of dictionnaries
+----------------------------
+
+.. highlight:: dart
+
+::
+
+   GeoDataFrame.fromRecords();
+
+Parameters:
+
+:geometryCol: **required** *String*: the geometry column name
+:speedCol: *String*: the speed column name
+:timestampCol: *String*: the timestamp column name
+:verbose: *bool*: verbosity
+
+::
+
+   final data = <Map<String, dynamic>>[];
+   final df = GeoDataFrame.fromRecords(data,
+        geometryCol: "geometry",
+        speedCol: "speed",
+        timestampCol: "timestamp",
+        verbose: true);
+

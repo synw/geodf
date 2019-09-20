@@ -1,0 +1,285 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Columns &mdash; Geodf  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Feature columns" href="feature_cols.html" />
+    <link rel="prev" title="Geodf" href="../../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Geodf
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Data structure</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Columns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_cols.html">Feature columns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timeline.html">Timeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="types.html">Types</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Dataframe</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../create.html">Create</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/select.html">Select</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/sort.html">Sort</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/count.html">Count</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Info</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../info/info.html">Info about the data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Repl</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../repl/repl.html">Repl</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Conventions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../conventions/inplace.html">Inplace operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../conventions/data.html">Data naming</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Geodf</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>Columns</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/src/struct/columns.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="columns">
+<h1>Columns<a class="headerlink" href="#columns" title="Permalink to this headline">¶</a></h1>
+<p>A dataframe has columns. At minimum a geometry column.</p>
+<div class="section" id="the-column-object">
+<h2>The column object<a class="headerlink" href="#the-column-object" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="geodataframecolumn">
+<h3><code class="docutils literal notranslate"><span class="pre">GeoDataFrameColumn</span></code><a class="headerlink" href="#geodataframecolumn" title="Permalink to this headline">¶</a></h3>
+<p>Properties:</p>
+<dl class="field-list simple">
+<dt class="field-odd">name</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">String</span></code>: the name of the column</p>
+</dd>
+<dt class="field-even">dtype</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">GeoDataFrameColumnType</span></code>: the internal type of the column:
+see the <a class="reference external" href="types.html">types</a> section for details</p>
+</dd>
+<dt class="field-odd">type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">Type</span></code>: the dart type the column’s data</p>
+</dd>
+<dt class="field-even">indice</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">int</span></code>: the column indice for the data. Mostly for internal usage</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="constructors">
+<h2>Constructors<a class="headerlink" href="#constructors" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="geodataframecolumn-fromgeojsongeometry">
+<h3><code class="docutils literal notranslate"><span class="pre">GeoDataFrameColumn.fromGeoJsonGeometry</span></code><a class="headerlink" href="#geodataframecolumn-fromgeojsongeometry" title="Permalink to this headline">¶</a></h3>
+<p>Build a column from parsed geojson objects</p>
+<p>Positional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">geometry</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">dynamic</span></code>: a geojson geometry: either a <a class="reference external" href="https://pub.dev/documentation/geojson/latest/geojson/GeoJsonPoint-class.html">GeoJsonPoint</a>
+, a <a class="reference external" href="https://pub.dev/documentation/geojson/latest/geojson/GeoJsonMultiPoint-class.html">GeoJsonMultiPoint</a>
+or a <a class="reference external" href="https://pub.dev/documentation/geojson/latest/geojson/GeoJsonLine-class.html">GeoJsonLine</a></p>
+</dd>
+<dt class="field-even">columnName</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">String</span></code>: the name of the column</p>
+</dd>
+</dl>
+<div class="highlight-dart notranslate"><div class="highlight"><pre><span></span><span class="kd">final</span> <span class="n">col</span> <span class="o">=</span> <span class="n">GeoDataFrameColumn</span><span class="p">.</span><span class="n">fromGeoJsonGeometry</span><span class="p">(</span><span class="n">someGeoJsonObject</span><span class="p">,</span> <span class="s2">&quot;myline&quot;</span><span class="p">);</span>
+<span class="n">print</span><span class="p">(</span><span class="n">col</span><span class="p">.</span><span class="n">dtype</span><span class="p">);</span>
+<span class="n">print</span><span class="p">(</span><span class="n">col</span><span class="p">.</span><span class="n">type</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="geodataframecolumn-inferfromdatapoint">
+<h3><code class="docutils literal notranslate"><span class="pre">GeoDataFrameColumn.inferFromDataPoint</span></code><a class="headerlink" href="#geodataframecolumn-inferfromdatapoint" title="Permalink to this headline">¶</a></h3>
+<p>Build a column with types infered from a datapoint</p>
+<p>Positional parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">dataPoint</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">dynamic</span></code>: a sample of the data to check to infer types</p>
+</dd>
+<dt class="field-even">columnName</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">String</span></code>: the name of the column</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="feature_cols.html" class="btn btn-neutral float-right" title="Feature columns" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../../index.html" class="btn btn-neutral float-left" title="Geodf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, synw
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
