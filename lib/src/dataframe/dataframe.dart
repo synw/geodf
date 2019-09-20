@@ -42,6 +42,8 @@ class GeoDataFrame {
 
   int get numRows => _dataMatrix.data.length;
 
+  // ********* computed properties **********
+
   double get avgSpeed => _avgSpeed();
 
   double get avgSpeedWhenMoving => _avgSpeed(moving: true);
