@@ -5,6 +5,11 @@ Geodf
 
 .. toctree::
    :maxdepth: 2
+
+   src/intro.rst
+
+.. toctree::
+   :maxdepth: 2
    :titlesonly:
    :caption: Data structure
 
