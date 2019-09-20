@@ -21,6 +21,7 @@ Geodf
    src/dataframe/sort.rst
    src/dataframe/count.rst
    src/dataframe/iter.rst
+   src/dataframe/props.rst
    src/dataframe/info.rst
 
 .. toctree::
