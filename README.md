@@ -2,14 +2,14 @@
 
 Geospatial data and timeseries analysis. Provides a `GeoDataFrame` object. Features:
 
-- Explore, clean and transform geographical data timeseries
-- Interactive shell
+- **Explore, clean, transform** geographical data and timeseries
+- **Interactive shell** to manipulate dataframes
 
 Check the [documentation](https://geodf.readthedocs.io/en/latest/) for usage.
 
-## Repl
+## Shell
 
-An interactive shell is available to manipulate a dataframe. Example session:
+Example session:
 
 ```
 Loading geojson file data/positions_sample.geojson
