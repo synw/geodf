@@ -1,8 +1,8 @@
 # Geodf
 
-Geospatial timeseries analysis. Provides a `GeoDataFrame` object. Features
+Geospatial data and timeseries analysis. Provides a `GeoDataFrame` object. Features:
 
-- Explore, clean and transform geographical data
+- Explore, clean and transform geographical data timeseries
 - Interactive shell
 
 Check the [documentation](https://geodf.readthedocs.io/en/latest/) for usage.
