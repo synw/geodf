@@ -21,6 +21,7 @@
 
 # Sphinx documentation
 docs/_build/
+documentation/_build/
 
 # Flutter/Dart/Pub related
 **/doc/api/
