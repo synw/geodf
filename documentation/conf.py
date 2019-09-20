@@ -22,6 +22,7 @@ project = 'Geodf'
 copyright = '2019, synw'
 author = 'synw'
 
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
