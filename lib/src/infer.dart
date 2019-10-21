@@ -1,6 +1,7 @@
 import 'package:geopoint/geopoint.dart';
 
 Type inferGeometryType(dynamic geom) {
+  //print("Infer geometry type $geom");
   Type t;
   if (geom is GeoPoint) {
     t = GeoPoint;

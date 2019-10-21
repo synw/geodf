@@ -5,6 +5,7 @@ import 'package:geopoint/geopoint.dart';
 import 'package:geojson/geojson.dart';
 import 'package:geodesy/geodesy.dart';
 import 'package:ml_linalg/linalg.dart';
+import 'package:units/units.dart';
 import '../types.dart';
 import '../timeline/timeline.dart';
 import 'column.dart';
@@ -12,6 +13,7 @@ import 'info.dart';
 import 'matrix.dart';
 import '../infer.dart';
 import '../geodesy.dart';
+import '../distance.dart' as dist;
 
 class GeoDataFrame {
   List<GeoDataFrameColumn> columns = <GeoDataFrameColumn>[];
@@ -23,7 +25,10 @@ class GeoDataFrame {
   GeoDataFrameColumn _speedCol;
   final _dataMatrix = GeoDataMatrix();
   final _info = GeoDataFrameInfo();
+  String _isSortedBy;
   //final _geoSerieTransformer = GeoSerieTransform();
+
+  List<List<dynamic>> get data => _dataMatrix.data;
 
   List<GeoPoint> get geoPoints => _geoPoints();
 
@@ -37,6 +42,8 @@ class GeoDataFrame {
 
   List<String> get columnsNames => _columnsNames();
 
+  GeoDataFrame get backupDf => _backupDf;
+
   GeoDataFrameFeatureColumns get featureCols => GeoDataFrameFeatureColumns(
       geometry: _geometryCol, time: _timeCol, speed: _speedCol);
 
@@ -49,21 +56,24 @@ class GeoDataFrame {
   double get avgSpeedWhenMoving => _avgSpeed(moving: true);
 
   double get avgSpeedKmhRounded =>
-      double.parse((_avgSpeed() / 1000).toStringAsFixed(1));
+      double.parse(Speed.fromMeterPerSecond(value: _avgSpeed())
+          .inKilometerPerHour
+          .toStringAsFixed(1));
 
   double get avgMovingSpeedKmhRounded =>
-      double.parse((_avgSpeed(moving: true) / 1000).toStringAsFixed(1));
+      double.parse(Speed.fromMeterPerSecond(value: _avgSpeed(moving: true))
+          .inKilometerPerHour
+          .toStringAsFixed(1));
 
   double get distance => _distance();
 
-  double get distanceKmRounded =>
-      double.parse((_distance() / 1000).toStringAsFixed(1));
+  double get distanceKmRounded => dist.kmRoundedFromMeters(_distance());
+
+  String get duration => formatDuration(_duration());
 
   // ***********************
   // Constructors
   // ***********************
-
-  GeoDataFrame._empty();
 
   GeoDataFrame.fromRecords(List<Map<String, dynamic>> records,
       {@required String geometryCol,
@@ -74,6 +84,9 @@ class GeoDataFrame {
     _backupDf = GeoDataFrame._empty();
     // feature columns
     // create geometry col
+    //print("RECORD ${records[0]}");
+    assert(records[0].containsKey(geometryCol));
+    assert(records[0][geometryCol] != null);
     final geomType = inferGeometryType(records[0][geometryCol]);
     _geometryCol = GeoDataFrameColumn(
         name: geometryCol,
@@ -81,20 +94,21 @@ class GeoDataFrame {
         type: geomType);
     columns.add(_geometryCol);
     // time col
-    if (timeCol != null) {
+    if (timestampCol != null) {
       _timeCol = GeoDataFrameColumn(
           name: timestampCol,
           dtype: GeoDataFrameColumnType.time,
           type: DateTime);
+      columns.add(_timeCol);
     }
-    columns.add(_timeCol);
     // speed col
     if (speedCol != null) {
       _speedCol = GeoDataFrameColumn(
           name: speedCol, dtype: GeoDataFrameColumnType.numeric, type: double);
+      columns.add(_speedCol);
     }
-    columns.add(_speedCol);
     // create regular cols infering their type from the first record
+    //print("COLUMNS $columns");
     for (final columnName in records[0].keys) {
       if (_columnsNames().contains(columnName)) {
         continue;
@@ -195,6 +209,30 @@ class GeoDataFrame {
     }
   }
 
+  GeoDataFrame.fromTimelineSequence(
+      GeoDataFrame df, TimelineSequence timelineSequence) {
+    print("Create from timeline sequence: " +
+        "${timelineSequence.startIndex} -> ${timelineSequence.endIndex}" +
+        " / ${df.numRows}");
+    _dataMatrix.data =
+        df.rowsSubset(timelineSequence.startIndex, timelineSequence.endIndex);
+    columns = df.columns;
+    _timeCol = df._timeCol;
+    _geometryCol = df._geometryCol;
+    _speedCol = df._speedCol;
+  }
+
+  GeoDataFrame._empty();
+
+  GeoDataFrame._copyWithMatrix(GeoDataFrame df, List<List<dynamic>> matrix) {
+    columns = df.columns;
+    _dataMatrix.data = matrix;
+    _timeCol = df._timeCol;
+    _geometryCol = df._geometryCol;
+    _speedCol = df._speedCol;
+    _backupDf = df._backupDf;
+  }
+
   static Future<GeoDataFrame> fromGeoJsonFile(String path,
       {String timestampProperty = "timestamp",
       String speedProperty = "speed",
@@ -211,20 +249,7 @@ class GeoDataFrame {
         verbose: verbose);
   }
 
-  GeoDataFrame._copyWithMatrix(GeoDataFrame df, List<List<dynamic>> matrix) {
-    columns = df.columns;
-    _dataMatrix.data = matrix;
-    _timeCol = df._timeCol;
-    _geometryCol = df._geometryCol;
-    _speedCol = df._speedCol;
-    _backupDf = df._backupDf;
-  }
-
-  // ***********************
-  // Static methods
-  // ***********************
-
-  static GeoDataFrame random(
+  factory GeoDataFrame.random(
       {double distance = 10.0,
       double speed,
       Duration timeInterval = const Duration(seconds: 10),
@@ -324,20 +349,17 @@ class GeoDataFrame {
 
   // ********* sequence detection **********
 
-  Future<TimelineScene> moves() async {
+  Future<TimelineScene> moves(
+      {Duration minStopDuration = const Duration(seconds: 30)}) async {
     assert(_speedCol != null);
+    assert(_timeCol != null);
     final sequences = <TimelineSequence>[];
     var currentSequence =
         TimelineSequence(timeColName: _timeCol.name, startIndex: 0);
-    var i = 0;
     final df = sort(_timeCol.name);
+    DateTime lastPointDate;
+    var i = 0;
     await for (final row in df._iter()) {
-      var endSignal = false;
-      if (row.containsKey("__endSignal__")) {
-        if (row["__endSignal__"] == true) {
-          endSignal = true;
-        }
-      }
       final speed = double.tryParse(row[_speedCol.name].toString()) ?? 0.0;
       // start a new sequence: detect type of sequence
       if (currentSequence.type == TimelineSequenceType.unknown) {
@@ -348,38 +370,49 @@ class GeoDataFrame {
       }
       final indices = _columnsIndices();
       // detect serie end
+      //print("ROW $row");
+      //print("$i SEQ $currentSequence ${row[_speedCol.name]} / $speed");
       switch (currentSequence.type) {
         case TimelineSequenceType.stopped:
-          if (speed > 0 || endSignal) {
-            currentSequence.endIndex = i - 1;
+          if (speed > 0) {
+            currentSequence.endIndex = i;
             currentSequence.data = _dataMatrix.dataForIndexRange(
-                currentSequence.startIndex,
-                currentSequence.endIndex + 1,
-                indices);
-            //print("ROWS SEQ ${currentSequence.rows}");
+                currentSequence.startIndex, currentSequence.endIndex, indices);
             sequences.add(currentSequence);
             currentSequence = TimelineSequence(
                 timeColName: _timeCol.name,
                 type: TimelineSequenceType.moving,
-                startIndex: i);
+                startIndex: i + 1);
           }
           break;
         case TimelineSequenceType.moving:
-          if (speed == 0 || endSignal) {
-            currentSequence.endIndex = i - 1;
+          var endSequence = false;
+          // if not first row
+          if (lastPointDate != null) {
+            final durationFromLastPoint =
+                (row[_timeCol.name] as DateTime).difference(lastPointDate);
+            //print("DUR $durationFromLastPoint");
+            if (speed == 0 && (durationFromLastPoint > minStopDuration)) {
+              endSequence = true;
+            }
+          }
+          // end sequence of finished parsing
+          final isEnd = (i == (df.numRows - 1));
+          //print("IS END $isEnd");
+          if (endSequence || isEnd) {
+            currentSequence.endIndex = i;
             currentSequence.data = _dataMatrix.dataForIndexRange(
-                currentSequence.startIndex,
-                currentSequence.endIndex + 1,
-                indices);
+                currentSequence.startIndex, currentSequence.endIndex, indices);
             sequences.add(currentSequence);
             currentSequence = TimelineSequence(
                 timeColName: _timeCol.name,
                 type: TimelineSequenceType.stopped,
-                startIndex: i);
+                startIndex: i + 1);
           }
           break;
         default:
       }
+      lastPointDate = row[_timeCol.name] as DateTime;
       ++i;
     }
     return TimelineScene(sequences: sequences);
@@ -513,17 +546,17 @@ class GeoDataFrame {
   Stream<Map<String, dynamic>> _iter() async* {
     var i = 0;
     final indices = _columnsIndices();
-    while (i < (numRows - 1)) {
+    while (i < (numRows)) {
       yield _dataMatrix.dataForIndex(i, indices);
       ++i;
     }
-    yield <String, dynamic>{"__endSignal__": true};
+    //yield <String, dynamic>{"__endSignal__": true};
   }
 
   double _avgSpeed({bool moving = false}) {
     assert(_speedCol != null);
-    final data = _dataMatrix
-        .recordsForColumnIndice(_indiceForColumn(_speedCol.name), limit: null);
+    final data =
+        _dataMatrix.recordsForColumnIndice(_indiceForColumn(_speedCol.name));
     final points = <double>[];
     for (var value in data) {
       if (value != null) {
@@ -538,20 +571,23 @@ class GeoDataFrame {
       }
     }
     final vector = Vector.fromList(points);
+    //print("AVG SPEED ${vector.mean()} / ${points.length} points");
     return vector.mean();
   }
 
-  Duration duration() {
+  Duration _duration() {
     assert(_timeCol != null);
-    final initial = Duration(seconds: 0);
+    String sortCol;
+    if (_isSortedBy != null) {
+      sortCol = _isSortedBy;
+    }
+    _sort(_timeCol.name, inPlace: true);
     final tr = _timeRecords();
-    var prevDate = tr[0];
-    final res = tr.fold<Duration>(initial, (prev, element) {
-      final v = prev + element.difference(prevDate);
-      prevDate = element;
-      return v;
-    });
-    return res;
+    final d = tr[tr.length - 1].difference(tr[0]);
+    if (sortCol != null) {
+      _sort(sortCol, inPlace: true);
+    }
+    return d;
   }
 
   double _distance() {
@@ -574,8 +610,9 @@ class GeoDataFrame {
 
   List<DateTime> _timeRecords() {
     assert(_timeCol != null);
-    return _dataMatrix
+    final d = _dataMatrix
         .typedRecordsForColumnIndice<DateTime>(_indiceForColumn(_timeCol.name));
+    return d;
   }
 
   List<GeoPoint> _geoPoints() {
@@ -587,6 +624,8 @@ class GeoDataFrame {
 
   GeoDataFrame _sort(String columnName,
       {bool inPlace = false, bool reverse = false}) {
+    assert(columnName != null);
+    _isSortedBy = columnName;
     final colIndice = _indiceForColumn(columnName);
     final order = _sortIndexForIndice(colIndice);
     var _newMatrix = <List<dynamic>>[];

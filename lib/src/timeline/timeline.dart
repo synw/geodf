@@ -9,8 +9,9 @@ class TimelineScene {
   int get numPoints =>
       sequences.fold<int>(0, (curr, next) => curr + next.length);
 
-  void printSequences() {
+  List<String> sequencesStr() {
     final norm = <double>[];
+    final seq = <String>[];
     for (final sequence in sequences) {
       final p = (sequence.length * 100) / numPoints;
       norm.add(p);
@@ -19,9 +20,27 @@ class TimelineScene {
     for (final sequence in sequences) {
       final d = sequence.toStringFromPercent(
           percent: "${norm[i].toStringAsFixed(0)}");
-      print("${_percentBarFromNorm(norm[i])} $d");
+      seq.add("${_percentBarFromNorm(norm[i])} $d");
       ++i;
     }
+    return seq;
+  }
+
+  void normalizeSequences() {
+    final seq = <TimelineSequence>[];
+    for (final sequence in sequences) {
+      final p = (sequence.length * 100) / numPoints;
+      sequence.percentOfScene = p;
+      seq.add(sequence);
+    }
+    sequences = seq;
+  }
+
+  void printSequences() => sequencesStr().forEach((seq) => print);
+
+  @override
+  String toString() {
+    return sequences.join(", ");
   }
 }
 
@@ -56,6 +75,7 @@ class TimelineSequence {
   String timeColName;
   int startIndex;
   int endIndex;
+  double percentOfScene;
 
   var data = <Map<String, dynamic>>[];
 
@@ -69,10 +89,14 @@ class TimelineSequence {
 
   Duration get duration => _endDate().difference(_startDate());
 
+  String get durationFormated => formatDuration(duration);
+
   TimelineSequence.empty();
 
   DateTime _startDate() {
-    assert(data.isNotEmpty);
+    if (data.isEmpty) {
+      return null;
+    }
     DateTime dt;
     try {
       dt = data[0][timeColName] as DateTime;
@@ -83,7 +107,9 @@ class TimelineSequence {
   }
 
   DateTime _endDate() {
-    assert(data.isNotEmpty);
+    if (data.isEmpty) {
+      return null;
+    }
     DateTime dt;
     try {
       dt = data[data.length - 1][timeColName] as DateTime;
@@ -97,7 +123,7 @@ class TimelineSequence {
     String str;
     switch (type) {
       case TimelineSequenceType.moving:
-        str = "Moving";
+        str = ">> Moving";
         break;
       default:
         str = "Stop";
@@ -107,7 +133,23 @@ class TimelineSequence {
 
   @override
   String toString() {
-    return toStringFromPercent();
+    final t = _typeToString();
+    return "$t $startIndex $endIndex";
+  }
+
+  String _typeToString() {
+    String s;
+    switch (type) {
+      case TimelineSequenceType.moving:
+        s = "Moving";
+        break;
+      case TimelineSequenceType.stopped:
+        s = "Stop";
+        break;
+      default:
+        s = "Unknown";
+    }
+    return s;
   }
 
   String toStringFromPercent({String percent = ""}) {
@@ -133,12 +175,14 @@ String formatDuration(Duration duration) {
     str = "${duration.inDays} days";
   } else if (duration.inHours > 0) {
     str = "${duration.inHours} hours";
-  } else if (duration.inDays > 0) {
+  } else if (duration.inMinutes > 0) {
     str = "${duration.inMinutes} minutes";
-  } else if (duration.inDays > 0) {
+  } else if (duration.inSeconds > 0) {
     str = "${duration.inSeconds} seconds";
-  } else if (duration.inDays > 0) {
+  } else if (duration.inMilliseconds > 0) {
     str = "${duration.inMilliseconds} milliseconds";
+  } else if (duration.inMicroseconds > 0) {
+    str = "${duration.inMicroseconds} microseconds";
   }
   return str;
 }
