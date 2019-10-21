@@ -11,10 +11,17 @@ dependencies:
   meta: ^1.1.6
   pedantic: ^1.6.0
   geodesy: ^0.3.1
-  ml_linalg: ^10.3.7
+  ml_linalg: ^12.1.0
   console: ^3.1.0
   geopoint: ^0.5.0
   geojson: ^0.6.0
+  duration: ^2.0.8
+  units:
+    git: git://github.com/yeradis/units.dart
+
+dependency_overrides:
+  geopoint: 
+    path: ../geopoint
 
 dev_dependencies:
   test: ^1.6.5
