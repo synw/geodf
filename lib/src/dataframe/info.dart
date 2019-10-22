@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+
 import 'column.dart';
 
 class GeoDataFrameInfo {

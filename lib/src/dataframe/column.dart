@@ -1,20 +1,20 @@
 import 'package:geojson/geojson.dart';
 import 'package:geopoint/geopoint.dart';
 import 'package:meta/meta.dart';
+
+import '../exceptions.dart';
 import '../types.dart';
 
 class GeoDataFrameColumn {
-  GeoDataFrameColumn({this.name, this.dtype, this.type, this.indice});
-
   String name;
   GeoDataFrameColumnType dtype;
   Type type;
   int indice;
+  GeoDataFrameColumn({this.name, this.dtype, this.type, this.indice});
 
-  GeoDataFrameColumn.fromGeoJsonGeometry(dynamic geometry, String columnName)
-      : assert(columnName != null),
+  GeoDataFrameColumn.fromGeoJsonGeometry(dynamic geometry, this.name)
+      : assert(name != null),
         assert(geometry != null) {
-    name = columnName;
     if (geometry is GeoJsonPoint) {
       dtype = GeoDataFrameColumnType.geometry;
       type = GeoPoint;
@@ -25,15 +25,14 @@ class GeoDataFrameColumn {
       dtype = GeoDataFrameColumnType.geometry;
       type = GeoSerie;
     } else {
-      throw ("Unsupported geometry $geometry");
+      throw UnsupportedGeoJsonFeatureError("Unsupported geometry $geometry");
     }
   }
 
   /// Infer the column types from a datapoint
-  GeoDataFrameColumn.inferFromDataPoint(dynamic dataPoint, String columnName)
-      : assert(columnName != null),
+  GeoDataFrameColumn.inferFromDataPoint(dynamic dataPoint, this.name)
+      : assert(name != null),
         assert(dataPoint != null) {
-    name = columnName;
     if (dataPoint is int) {
       dtype = GeoDataFrameColumnType.numeric;
       type = int;
@@ -56,6 +55,38 @@ class GeoDataFrameColumn {
       dtype = GeoDataFrameColumnType.categorical;
       type = String;
     }
+  }
+
+  @override
+  int get hashCode => name.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GeoDataFrameColumn &&
+          runtimeType == other.runtimeType &&
+          name == other.name;
+
+  @override
+  String toString() {
+    return "$name ($dtype) with $type data";
+  }
+
+  static DateTime dateFromInt(int dateObj, TimestampType timestampFormat) {
+    assert(dateObj != null);
+    DateTime date;
+    switch (timestampFormat) {
+      case TimestampType.milliseconds:
+        date = DateTime.fromMillisecondsSinceEpoch(dateObj);
+        break;
+      case TimestampType.seconds:
+        date = DateTime.fromMillisecondsSinceEpoch(dateObj * 1000);
+        break;
+      case TimestampType.microseconds:
+        date = DateTime.fromMicrosecondsSinceEpoch(dateObj);
+        break;
+    }
+    return date;
   }
 
   static List<GeoDataFrameColumn> defaultColumns() {
@@ -83,45 +114,13 @@ class GeoDataFrameColumn {
     }
     return null;
   }
-
-  static DateTime dateFromInt(int dateObj, TimestampType timestampFormat) {
-    assert(dateObj != null);
-    DateTime date;
-    switch (timestampFormat) {
-      case TimestampType.milliseconds:
-        date = DateTime.fromMillisecondsSinceEpoch(dateObj);
-        break;
-      case TimestampType.seconds:
-        date = DateTime.fromMillisecondsSinceEpoch(dateObj * 1000);
-        break;
-      case TimestampType.microseconds:
-        date = DateTime.fromMicrosecondsSinceEpoch(dateObj);
-        break;
-    }
-    return date;
-  }
-
-  @override
-  String toString() {
-    return "$name ($dtype) with $type data";
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is GeoDataFrameColumn &&
-          runtimeType == other.runtimeType &&
-          name == other.name;
-
-  @override
-  int get hashCode => name.hashCode;
 }
 
 class GeoDataFrameFeatureColumns {
-  GeoDataFrameFeatureColumns(
-      {@required this.time, @required this.geometry, @required this.speed});
-
   final GeoDataFrameColumn time;
+
   final GeoDataFrameColumn geometry;
   final GeoDataFrameColumn speed;
+  GeoDataFrameFeatureColumns(
+      {@required this.time, @required this.geometry, @required this.speed});
 }

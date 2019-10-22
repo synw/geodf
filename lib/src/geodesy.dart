@@ -1,7 +1,7 @@
 import 'package:geopoint/geopoint.dart';
 import 'package:geodesy/geodesy.dart';
 
-final geodesy = Geodesy();
+final _geodesy = Geodesy();
 
 double geoPointsDistance(List<GeoPoint> geoPoints) {
   var dist = 0.0;
@@ -12,7 +12,7 @@ double geoPointsDistance(List<GeoPoint> geoPoints) {
       ++i;
       continue;
     }
-    dist += geodesy.distanceBetweenTwoGeoPoints(
+    dist += _geodesy.distanceBetweenTwoGeoPoints(
         prevPoint.toLatLng(), geoPoint.toLatLng());
     prevPoint = geoPoint;
     ++i;

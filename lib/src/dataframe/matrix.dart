@@ -1,5 +1,7 @@
 import 'package:ml_linalg/vector.dart';
 
+import '../exceptions.dart';
+
 class GeoDataMatrix {
   List<List<dynamic>> data = <List<dynamic>>[];
 
@@ -34,7 +36,7 @@ class GeoDataMatrix {
       try {
         val = row[columnIndice] as T;
       } catch (e) {
-        throw ("Can not convert record $val to type $T $e");
+        throw TypeConversionError("Can not convert record $val to type $T $e");
       }
       dataFound.add(val);
       ++i;
@@ -60,7 +62,6 @@ class GeoDataMatrix {
   List<Map<String, dynamic>> dataForIndexRange(
       int startIndex, int endIndex, Map<int, String> indices) {
     final dataRows = <Map<String, dynamic>>[];
-    final i = 0;
     for (final row in data.sublist(startIndex, endIndex)) {
       final dataRow = <String, dynamic>{};
       var i = 0;
@@ -75,9 +76,7 @@ class GeoDataMatrix {
 
   List<List<dynamic>> rowsForIndexRange(int startIndex, int endIndex) {
     final rows = <List<dynamic>>[];
-    for (final row in data.sublist(startIndex, endIndex)) {
-      rows.add(row);
-    }
+    data.sublist(startIndex, endIndex).forEach(rows.add);
     return rows;
   }
 

@@ -1,5 +1,5 @@
-import 'package:ml_linalg/linalg.dart';
-import 'package:geopoint/geopoint.dart';
+//import 'package:ml_linalg/linalg.dart';
+//import 'package:geopoint/geopoint.dart';
 /*
 /// Turn the numeric properties of a [GeoPoint] into a list of [Vector]
 Map<String, Vector> geoPointsNumericPropertiesToVectors(

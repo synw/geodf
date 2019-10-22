@@ -1,9 +1,9 @@
-import 'package:meta/meta.dart';
+/*import 'package:meta/meta.dart';
 import 'package:geopoint/geopoint.dart';
 import 'package:ml_linalg/linalg.dart';
 import 'convert.dart';
 import '../types.dart';
-/*
+
 class GeoSerieTransform {
   /// Resample a time serie
   ///

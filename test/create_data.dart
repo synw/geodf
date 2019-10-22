@@ -6,7 +6,7 @@ List<Map<String, dynamic>> createDataWithStops() {
       geoPoint: GeoPoint(latitude: 0.0, longitude: 0.0),
       speed: 30.0,
       altitude: 300.0,
-      date: DateTime.now().subtract(Duration(hours: 1)));
+      date: DateTime.now().subtract(const Duration(hours: 1)));
   var i = 0;
   while (i < 100) {
     var stop = false;
@@ -31,9 +31,9 @@ class _Row {
 
   _Row.fromPrevious(_Row prevRow, {bool stop = false})
       : geoPoint = prevRow.geoPoint,
-        speed = (stop) ? 0.0 : 30.0,
+        speed = stop ? 0.0 : 30.0,
         altitude = prevRow.altitude {
-    final newDate = prevRow.date.add(Duration(seconds: 5));
+    final newDate = prevRow.date.add(const Duration(seconds: 5));
     date = DateTime.fromMillisecondsSinceEpoch(newDate.millisecondsSinceEpoch);
   }
 
