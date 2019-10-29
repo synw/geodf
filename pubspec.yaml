@@ -10,11 +10,12 @@ environment:
 dependencies:
   meta: ^1.1.6
   pedantic: ^1.6.0
-  geodesy: ^0.3.1
-  ml_linalg: ^12.1.0
-  geojson: ^0.6.0
+  geodesy: ^0.3.2
+  ml_linalg: ^12.3.0
+  geojson: 
+    path: ../geojson
   duration: ^2.0.8
-  extra_pedantic: ^1.1.1+1
+  extra_pedantic: ^1.1.1+2
 
 dependency_overrides:
   geopoint: ^0.6.1

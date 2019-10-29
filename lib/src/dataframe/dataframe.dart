@@ -109,12 +109,40 @@ class GeoDataFrame {
     }
   }
 
-  GeoDataFrame.fromRecords(List<Map<String, dynamic>> records,
+  factory GeoDataFrame.emptyfromRecord(Map<String, dynamic> record,
+      {@required String geometryCol,
+      String speedCol,
+      String timestampCol,
+      bool verbose = false}) {
+    assert(record.isNotEmpty);
+    return GeoDataFrame._fromRecords(<Map<String, dynamic>>[record],
+        geometryCol: geometryCol,
+        speedCol: speedCol,
+        timestampCol: timestampCol,
+        verbose: verbose,
+        forceEmpty: true);
+  }
+
+  factory GeoDataFrame.fromRecords(List<Map<String, dynamic>> records,
+      {@required String geometryCol,
+      String speedCol,
+      String timestampCol,
+      bool verbose = false}) {
+    assert(records.isNotEmpty);
+    return GeoDataFrame._fromRecords(records,
+        geometryCol: geometryCol,
+        speedCol: speedCol,
+        timestampCol: timestampCol,
+        verbose: verbose);
+  }
+
+  GeoDataFrame._fromRecords(List<Map<String, dynamic>> records,
       {@required String geometryCol,
       String speedCol,
       String timestampCol,
       //TimestampType timestampFormat = TimestampType.milliseconds,
-      bool verbose = false}) {
+      bool verbose = false,
+      bool forceEmpty = false}) {
     _backupDf = GeoDataFrame._empty();
     // feature columns
     // create geometry col
@@ -151,14 +179,16 @@ class GeoDataFrame {
           records[0][columnName], columnName);
       columns.add(col);
     }
-    // fill the data
-    final indices = _columnsIndices();
-    for (final record in records) {
-      final line = <dynamic>[];
-      indices.forEach((i, colName) {
-        line.add(record[colName]);
-      });
-      _dataMatrix.add(line);
+    if (!forceEmpty) {
+      // fill the data
+      final indices = _columnsIndices();
+      for (final record in records) {
+        final line = <dynamic>[];
+        indices.forEach((i, colName) {
+          line.add(record[colName]);
+        });
+        _dataMatrix.add(line);
+      }
     }
     if (verbose) {
       print("Created a dataframe with $numRows datapoints");
@@ -230,14 +260,23 @@ class GeoDataFrame {
 
   GeoDataFrame._empty();
 
-  double get avgMovingSpeedKmhRounded =>
-      round(3.6 * _avgSpeed(moving: true), decimals: 1);
-
   double get avgSpeed => _avgSpeed();
+
+  double get avgSpeedWhenMoving => _avgSpeed(moving: true);
 
   double get avgSpeedKmhRounded => round(3.6 * _avgSpeed(), decimals: 1);
 
-  double get avgSpeedWhenMoving => _avgSpeed(moving: true);
+  double get avgSpeedWhenMovingKmhRounded =>
+      round(3.6 * _avgSpeed(moving: true), decimals: 1);
+
+  double get maxSpeed => _avgSpeed();
+
+  double get maxSpeedWhenMoving => _avgSpeed(moving: true);
+
+  double get maxSpeedKmhRounded => round(3.6 * _maxSpeed(), decimals: 1);
+
+  double get maxSpeedWhenMovingKmhRounded =>
+      round(3.6 * _maxSpeed(moving: true), decimals: 1);
 
   // ********* computed properties **********
 
@@ -257,7 +296,7 @@ class GeoDataFrame {
       geometry: _geometryCol, time: _timeCol, speed: _speedCol);
 
   // ***********************
-  // Constructors
+  // Properties
   // ***********************
 
   GeoDataFrameColumn get geometryCol => _geometryCol;
@@ -340,6 +379,28 @@ class GeoDataFrame {
 
   void limitI(int max, {int startIndex = 0}) =>
       _dataMatrix.data = _dataMatrix.data.sublist(startIndex, startIndex + max);
+
+  // ********* insert operations **********
+
+  void addRecord(Map<String, dynamic> record) {
+    final indices = _columnsIndices();
+    final row = <dynamic>[];
+    var i = 0;
+    record.forEach((k, dynamic v) {
+      final keyName = indices[i];
+      row.add(record[keyName]);
+      ++i;
+    });
+    _dataMatrix.add(row);
+  }
+
+  // ********* delete operations **********
+
+  void removeRowAt(int index) => _dataMatrix.data.removeAt(index);
+
+  void removeFirstRow() => _dataMatrix.data.removeAt(0);
+
+  void removeLastRow() => _dataMatrix.data.removeLast();
 
   // ********* resample **********
 
@@ -523,28 +584,6 @@ class GeoDataFrame {
     return TimelineScene(sequences: sequences);
   }
 
-  double _avgSpeed({bool moving = false}) {
-    assert(_speedCol != null);
-    final data =
-        _dataMatrix.recordsForColumnIndice(_indiceForColumn(_speedCol.name));
-    final points = <double>[];
-    for (final value in data) {
-      if (value != null) {
-        final val = double.parse(value.toString());
-        if (!moving) {
-          points.add(val);
-        } else {
-          if (val > 0) {
-            points.add(val);
-          }
-        }
-      }
-    }
-    final vector = Vector.fromList(points);
-    //print("AVG SPEED ${vector.mean()} / ${points.length} points");
-    return vector.mean();
-  }
-
   // ***********************
   // Internal methods
   // ***********************
@@ -568,6 +607,16 @@ class GeoDataFrame {
     }
     return ind;
   }
+
+  /*Map<String, int> _columnsNamesWithIndices() {
+    final ind = <String, int>{};
+    var i = 0;
+    for (final col in columns) {
+      ind[col.name] = i;
+      ++i;
+    }
+    return ind;
+  }*/
 
   List<String> _columnsNames() {
     final str = <String>[];
@@ -615,6 +664,60 @@ class GeoDataFrame {
     assert(geometryCol.type == GeoPoint);
     return _dataMatrix.typedRecordsForColumnIndice<GeoPoint>(
         _indiceForColumn(_geometryCol.name));
+  }
+
+  double _maxSpeed({bool moving = false}) =>
+      _speedCalc(moving: moving, max: true);
+
+  double _avgSpeed({bool moving = false}) => _speedCalc(moving: moving);
+
+  double _speedCalc({bool moving = false, bool max = false}) {
+    assert(_speedCol != null);
+    final data =
+        _dataMatrix.recordsForColumnIndice(_indiceForColumn(_speedCol.name));
+    switch (_dataMatrix.data.length) {
+      case 0:
+        return 0;
+        break;
+      case 1:
+        if (moving) {
+          final val = data[0] as double;
+          if (val > 0) {
+            return val;
+          } else {
+            return 0;
+          }
+        }
+    }
+    //print("SPEED DATA $data");
+    final points = <double>[];
+    for (final value in data) {
+      if (value != null) {
+        final val = double.parse(value.toString());
+        if (!moving) {
+          points.add(val);
+        } else {
+          if (val > 0) {
+            points.add(val);
+          }
+        }
+      }
+    }
+    if (points.isEmpty) {
+      return 0;
+    }
+    //print("VECTOR FROM POINTs $points");
+    final vector = Vector.fromList(points);
+    //print("AVG SPEED ${vector.mean()} / ${points.length} points");
+    double res;
+    switch (max) {
+      case true:
+        res = vector.max();
+        break;
+      default:
+        res = vector.mean();
+    }
+    return res;
   }
 
   int _indiceForColumn(String columnName) {
