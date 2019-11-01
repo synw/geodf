@@ -260,25 +260,15 @@ class GeoDataFrame {
 
   GeoDataFrame._empty();
 
+  // ********* computed properties **********
+
   double get avgSpeed => _avgSpeed();
 
   double get avgSpeedWhenMoving => _avgSpeed(moving: true);
 
-  double get avgSpeedKmhRounded => round(3.6 * _avgSpeed(), decimals: 1);
+  double get maxSpeed => _maxSpeed();
 
-  double get avgSpeedWhenMovingKmhRounded =>
-      round(3.6 * _avgSpeed(moving: true), decimals: 1);
-
-  double get maxSpeed => _avgSpeed();
-
-  double get maxSpeedWhenMoving => _avgSpeed(moving: true);
-
-  double get maxSpeedKmhRounded => round(3.6 * _maxSpeed(), decimals: 1);
-
-  double get maxSpeedWhenMovingKmhRounded =>
-      round(3.6 * _maxSpeed(moving: true), decimals: 1);
-
-  // ********* computed properties **********
+  double get maxSpeedWhenMoving => _maxSpeed(moving: true);
 
   GeoDataFrame get backupDf => _backupDf;
 
