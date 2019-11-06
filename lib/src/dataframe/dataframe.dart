@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:df/df.dart';
 import 'package:geodesy/geodesy.dart';
 import 'package:geojson/geojson.dart';
 import 'package:geopoint/geopoint.dart';
@@ -14,10 +15,10 @@ import '../infer.dart';
 import '../timeline/timeline.dart';
 import '../types.dart';
 import 'column.dart';
-import 'info.dart';
 import 'matrix.dart';
 
-class GeoDataFrame {
+class GeoDataFrame extends DataFrame {
+  @override
   List<GeoDataFrameColumn> columns = <GeoDataFrameColumn>[];
 
   GeoDataFrame _backupDf;
@@ -26,7 +27,7 @@ class GeoDataFrame {
   GeoDataFrameColumn _geometryCol;
   GeoDataFrameColumn _speedCol;
   final _dataMatrix = GeoDataMatrix();
-  final _info = GeoDataFrameInfo();
+  //final _info = GeoDataFrameInfo();
   String _isSortedBy;
   //final _geoSerieTransformer = GeoSerieTransform();
 
@@ -147,8 +148,8 @@ class GeoDataFrame {
     // feature columns
     // create geometry col
     //print("RECORD ${records[0]}");
-    assert(records[0].containsKey(geometryCol));
-    assert(records[0][geometryCol] != null);
+    //assert(records[0].containsKey(geometryCol));
+    //assert(records[0][geometryCol] != null);
     final geomType = inferGeometryType(records[0][geometryCol]);
     _geometryCol = GeoDataFrameColumn(
         name: geometryCol,
@@ -191,7 +192,7 @@ class GeoDataFrame {
       }
     }
     if (verbose) {
-      print("Created a dataframe with $numRows datapoints");
+      print("Created a dataframe with $length datapoints");
     }
   }
 
@@ -199,7 +200,7 @@ class GeoDataFrame {
       GeoDataFrame df, TimelineSequence timelineSequence) {
     print("Create from timeline sequence: "
         "${timelineSequence.startIndex} -> ${timelineSequence.endIndex}"
-        " / ${df.numRows}");
+        " / ${df.length}");
     _dataMatrix.data =
         df.rowsSubset(timelineSequence.startIndex, timelineSequence.endIndex);
     columns = df.columns;
@@ -272,10 +273,6 @@ class GeoDataFrame {
 
   GeoDataFrame get backupDf => _backupDf;
 
-  List<String> get columnsNames => _columnsNames();
-
-  List<List<dynamic>> get data => _dataMatrix.data;
-
   double get distance => _distance();
 
   double get distanceKmRounded => dist.kmRoundedFromMeters(_distance());
@@ -292,8 +289,6 @@ class GeoDataFrame {
   GeoDataFrameColumn get geometryCol => _geometryCol;
 
   List<GeoPoint> get geoPoints => _geoPoints();
-
-  int get numRows => _dataMatrix.data.length;
 
   GeoDataFrameColumn get speedCol => _speedCol;
 
@@ -317,80 +312,13 @@ class GeoDataFrame {
 
   // ********* select operations **********
 
-  List<T> colRecords<T>(String columnName) =>
-      _dataMatrix.typedRecordsForColumnIndice<T>(_indiceForColumn(columnName));
-
-  void cols() => _info.cols(columns: columns, featureColumns: featureCols);
-
-  int countNulls(String columnName,
-      {List<dynamic> nullValues = const <dynamic>[
-        null,
-        "null",
-        "nan",
-        "NULL",
-        "N/A"
-      ]}) {
-    final n =
-        _dataMatrix.countForValues(_indiceForColumn(columnName), nullValues);
-    return n;
-  }
-
-  int countZeros(String columnName,
-      {List<dynamic> zeroValues = const <dynamic>[0]}) {
-    final n =
-        _dataMatrix.countForValues(_indiceForColumn(columnName), zeroValues);
-    return n;
-  }
-
-  List<Map<String, dynamic>> dataSubset(int startIndex, int endIndex) =>
-      _dataMatrix.dataForIndexRange(startIndex, endIndex, _columnsIndices());
-
-  void head([int lines = 5]) {
-    print("${columns.length} columns: ${columnsNames.join(",")}");
-    final rows = _dataMatrix.data.sublist(0, lines);
-    _info.printRows(rows);
-    print("$numRows rows");
-  }
-
   void headCol(String columnName, {int lines = 10}) {
     final indice = _indiceForColumn(columnName);
     final records = _dataMatrix.recordsForColumnIndice(indice, limit: lines);
     print(
-        "Column $columnName ($numRows records of type ${columns[indice].type}):");
+        "Column $columnName ($length records of type ${columns[indice].type}):");
     print(records.join(","));
   }
-
-  Stream<Map<String, dynamic>> iter() => _iter();
-
-  GeoDataFrame limit(int max, {int startIndex = 0}) {
-    final _newMatrix = _dataMatrix.data.sublist(startIndex, startIndex + max);
-    return GeoDataFrame._copyWithMatrix(this, _newMatrix);
-  }
-
-  void limitI(int max, {int startIndex = 0}) =>
-      _dataMatrix.data = _dataMatrix.data.sublist(startIndex, startIndex + max);
-
-  // ********* insert operations **********
-
-  void addRecord(Map<String, dynamic> record) {
-    final indices = _columnsIndices();
-    final row = <dynamic>[];
-    var i = 0;
-    record.forEach((k, dynamic v) {
-      final keyName = indices[i];
-      row.add(record[keyName]);
-      ++i;
-    });
-    _dataMatrix.add(row);
-  }
-
-  // ********* delete operations **********
-
-  void removeRowAt(int index) => _dataMatrix.data.removeAt(index);
-
-  void removeFirstRow() => _dataMatrix.data.removeAt(0);
-
-  void removeLastRow() => _dataMatrix.data.removeLast();
 
   // ********* resample **********
 
@@ -469,7 +397,7 @@ class GeoDataFrame {
             }
           }
           // end sequence of finished parsing
-          final isEnd = i == (df.numRows - 1);
+          final isEnd = i == (df.length - 1);
           //print("IS END $isEnd");
           if (endSequence || isEnd) {
             currentSequence
@@ -505,11 +433,6 @@ class GeoDataFrame {
   List<List<dynamic>> rowsSubset(int startIndex, int endIndex) =>
       _dataMatrix.rowsForIndexRange(startIndex, endIndex);
 
-  void show([int lines = 5]) {
-    print("${columns.length} columns and $numRows rows");
-    head(lines);
-  }
-
   GeoDataFrame sort(String columnName) => _sort(columnName);
 
   GeoDataFrame sortDesc(String columnName) => _sort(columnName, reverse: true);
@@ -520,11 +443,6 @@ class GeoDataFrame {
   void sortI(String columnName) => _sort(columnName, inPlace: true);
 
 // ********* print info **********
-
-  GeoDataFrame subset(int startIndex, int endIndex) {
-    final _newMatrix = _dataMatrix.data.sublist(startIndex, endIndex);
-    return GeoDataFrame._copyWithMatrix(this, _newMatrix);
-  }
 
   double sumDoubleCol(String columnName) =>
       _dataMatrix.sumDoubleCol(_indiceForColumn(columnName));
@@ -726,7 +644,7 @@ class GeoDataFrame {
   Stream<Map<String, dynamic>> _iter() async* {
     var i = 0;
     final indices = _columnsIndices();
-    while (i < numRows) {
+    while (i < length) {
       yield _dataMatrix.dataForIndex(i, indices);
       ++i;
     }

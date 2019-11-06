@@ -1,3 +1,4 @@
+import 'package:df/df.dart';
 import 'package:geojson/geojson.dart';
 import 'package:geopoint/geopoint.dart';
 import 'package:meta/meta.dart';
@@ -5,16 +6,18 @@ import 'package:meta/meta.dart';
 import '../exceptions.dart';
 import '../types.dart';
 
-class GeoDataFrameColumn {
-  String name;
+class GeoDataFrameColumn extends DataFrameColumn {
   GeoDataFrameColumnType dtype;
-  Type type;
   int indice;
-  GeoDataFrameColumn({this.name, this.dtype, this.type, this.indice});
+  GeoDataFrameColumn({String name, this.dtype, Type type, this.indice}) {
+    super.name = name;
+    super.type = type;
+  }
 
-  GeoDataFrameColumn.fromGeoJsonGeometry(dynamic geometry, this.name)
+  GeoDataFrameColumn.fromGeoJsonGeometry(dynamic geometry, String name)
       : assert(name != null),
         assert(geometry != null) {
+    super.name = name;
     if (geometry is GeoJsonPoint) {
       dtype = GeoDataFrameColumnType.geometry;
       type = GeoPoint;
@@ -30,9 +33,10 @@ class GeoDataFrameColumn {
   }
 
   /// Infer the column types from a datapoint
-  GeoDataFrameColumn.inferFromDataPoint(dynamic dataPoint, this.name)
+  GeoDataFrameColumn.inferFromDataPoint(dynamic dataPoint, String name)
       : assert(name != null),
         assert(dataPoint != null) {
+    super.name = name;
     if (dataPoint is int) {
       dtype = GeoDataFrameColumnType.numeric;
       type = int;
@@ -56,16 +60,6 @@ class GeoDataFrameColumn {
       type = String;
     }
   }
-
-  @override
-  int get hashCode => name.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is GeoDataFrameColumn &&
-          runtimeType == other.runtimeType &&
-          name == other.name;
 
   @override
   String toString() {
