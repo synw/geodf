@@ -2,10 +2,10 @@ name: geodf
 description: Geospatial timeseries analysis. Provides a GeoDataFrame object
 author: synw <ansterj@gmail.com>
 homepage: https://github.com/synw/geodf
-version: 0.0.1
+version: 0.1.0
 
 environment:
-  sdk: ">=2.3.0 <3.0.0"
+  sdk: ">=2.4.0 <3.0.0"
 
 dependencies:
   meta: ^1.1.7
@@ -13,9 +13,8 @@ dependencies:
   extra_pedantic: ^1.1.1+3
   geodesy: ^0.3.2
   geojson: ^0.7.3
-  #duration: ^2.0.8
   df: ^0.1.0
 
 dev_dependencies:
   test: ^1.6.5
-  test_coverage: ^0.3.0+1
+  test_coverage: ^0.4.0
