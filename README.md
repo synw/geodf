@@ -1,6 +1,6 @@
 # Geodf
 
-[![Build Status](https://travis-ci.org/synw/geodf.svg?branch=master)](https://travis-ci.org/synw/geodf)
+[![pub package](https://img.shields.io/pub/v/geodf.svg)](https://pub.dartlang.org/packages/geodf) [![Build Status](https://travis-ci.org/synw/geodf.svg?branch=master)](https://travis-ci.org/synw/geodf)
 
 Geospatial data and timeseries analysis. Provides a `GeoDataFrame` object. Features:
 
