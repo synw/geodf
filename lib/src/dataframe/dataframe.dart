@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:df/df.dart';
@@ -120,6 +121,23 @@ class GeoDataFrame extends DataFrame {
       //_dataMatrix.add(dataPoint);
       ++i;
     }
+  }
+
+  /// Get a dataframe from a geojson file
+  static Future<GeoDataFrame> fromGeoJsonFile(String path,
+      {String timestampProperty = "timestamp",
+      String speedProperty = "speed",
+      TimestampType timestampFormat = TimestampType.milliseconds,
+      bool verbose = false}) async {
+    if (verbose) {
+      print("Loading geojson file $path");
+    }
+    final featureCollection = await featuresFromGeoJsonFile(File(path));
+    return GeoDataFrame.fromGeoJson(featureCollection,
+        speedProperty: speedProperty,
+        timestampProperty: timestampProperty,
+        timestampFormat: timestampFormat,
+        verbose: verbose);
   }
 
   /// Create an empty dataframe from records
@@ -472,21 +490,6 @@ class GeoDataFrame extends DataFrame {
     final d = _dataMatrix
         .typedRecordsForColumnIndice<DateTime>(_indiceForColumn(_timeCol.name));
     return d;
-  }
+  }*/
 
-  static Future<GeoDataFrame> fromGeoJsonFile(String path,
-      {String timestampProperty = "timestamp",
-      String speedProperty = "speed",
-      TimestampType timestampFormat = TimestampType.milliseconds,
-      bool verbose = false}) async {
-    if (verbose) {
-      print("Loading geojson file $path");
-    }
-    final featureCollection = await featuresFromGeoJsonFile(File(path));
-    return GeoDataFrame.fromGeoJson(featureCollection,
-        speedProperty: speedProperty,
-        timestampProperty: timestampProperty,
-        timestampFormat: timestampFormat,
-        verbose: verbose);
-  } */
 }
