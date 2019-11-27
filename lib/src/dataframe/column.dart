@@ -6,14 +6,21 @@ import 'package:meta/meta.dart';
 import '../exceptions.dart';
 import '../types.dart';
 
+/// A dataframe column
 class GeoDataFrameColumn extends DataFrameColumn {
-  GeoDataFrameColumnType dtype;
-  int indice;
+  /// Default constructor
   GeoDataFrameColumn({String name, this.dtype, Type type, this.indice}) {
     super.name = name;
     super.type = type;
   }
 
+  /// The column internal type
+  GeoDataFrameColumnType dtype;
+
+  /// The column indice
+  int indice;
+
+  /// Create from geojson
   GeoDataFrameColumn.fromGeoJsonGeometry(dynamic geometry, String name)
       : assert(name != null),
         assert(geometry != null) {
@@ -66,6 +73,7 @@ class GeoDataFrameColumn extends DataFrameColumn {
     return "$name ($dtype) with $type data";
   }
 
+  /// Get a date from a timestamp
   static DateTime dateFromInt(int dateObj, TimestampType timestampFormat) {
     assert(dateObj != null);
     DateTime date;
@@ -83,6 +91,7 @@ class GeoDataFrameColumn extends DataFrameColumn {
     return date;
   }
 
+  /// Get default columns
   static List<GeoDataFrameColumn> defaultColumns() {
     final cols = <GeoDataFrameColumn>[
       GeoDataFrameColumn(
@@ -99,6 +108,7 @@ class GeoDataFrameColumn extends DataFrameColumn {
     return cols;
   }
 
+  /// Create a dataframe
   static GeoDataFrameColumn fromName(
       String name, List<GeoDataFrameColumn> columns) {
     for (final c in columns) {
@@ -110,11 +120,18 @@ class GeoDataFrameColumn extends DataFrameColumn {
   }
 }
 
+/// The feature columns
 class GeoDataFrameFeatureColumns {
+  /// Default constructor
+  const GeoDataFrameFeatureColumns(
+      {@required this.time, @required this.geometry, @required this.speed});
+
+  /// Time column
   final GeoDataFrameColumn time;
 
+  /// Geometry column
   final GeoDataFrameColumn geometry;
+
+  /// Speed column
   final GeoDataFrameColumn speed;
-  GeoDataFrameFeatureColumns(
-      {@required this.time, @required this.geometry, @required this.speed});
 }

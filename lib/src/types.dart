@@ -1,6 +1,17 @@
-enum GeoDataFrameColumnType { categorical, numeric, time, geometry }
+/// The internal type of a column
+enum GeoDataFrameColumnType {
+  /// Categorical column
+  categorical,
 
-enum TimelineSequenceType { moving, stopped, unknown }
+  /// Numeric column
+  numeric,
+
+  /// Type column
+  time,
+
+  /// Geometry column
+  geometry
+}
 
 /// Type of the timestamp
 enum TimestampType {
@@ -13,5 +24,3 @@ enum TimestampType {
   /// Micorseconds from epoch
   microseconds
 }
-
-enum GeoSerieResampleMethod { sum, mean }

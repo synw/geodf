@@ -1,11 +1,13 @@
 import 'package:ml_linalg/linalg.dart';
 
+/// Min / max normalization of mean slices
 List<double> sliceAndNormMm<T>(List<T> values, {int size = 10}) {
   assert(T is int || T is double);
   final vector = Vector.fromList(meanSlices(values, size: size));
   return vector.rescale().toList();
 }
 
+/// Get mean slices
 List<double> meanSlices<T>(List<T> values, {int size = 10}) {
   assert(T is int || T is double);
   var isInt = false;

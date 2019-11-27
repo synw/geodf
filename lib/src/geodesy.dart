@@ -3,6 +3,7 @@ import 'package:geodesy/geodesy.dart';
 
 final _geodesy = Geodesy();
 
+/// Get the distance for a list of [GeoPoint]
 double geoPointsDistance(List<GeoPoint> geoPoints) {
   var dist = 0.0;
   var prevPoint = geoPoints[0];
