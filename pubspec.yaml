@@ -14,6 +14,8 @@ dependencies:
   geodesy: ^0.3.2
   geojson: ^0.8.0
   df: ^0.1.0
+  geopoint: ^0.7.0
+  ml_linalg: ^12.7.1
 
 dev_dependencies:
   test: ^1.6.5
