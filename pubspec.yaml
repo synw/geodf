@@ -1,6 +1,5 @@
 name: geodf
 description: Geospatial timeseries analysis. Provides a GeoDataFrame object
-author: synw <ansterj@gmail.com>
 homepage: https://github.com/synw/geodf
 version: 0.1.1
 
