@@ -5,7 +5,7 @@ dart:
 
 install:
   - pub get
-  - gem install coveralls-lcov
+  #- gem install coveralls-lcov
 
 #script: pub run test_coverage
 
